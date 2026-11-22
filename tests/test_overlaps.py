@@ -19,7 +19,8 @@ def test_triple_overlap_once(dirty):
 
 
 def test_total_overlap(dirty):
-    assert dirty['overlaps']['counts'] == dict(regions=7, overlap_frames=65)
+    assert dirty['overlaps']['counts'] == dict(
+        regions=7, overlap_frames=65, candidate_risk_regions=0, candidate_risk_frames=0)
 
 
 def test_two_tracks_never_mix():

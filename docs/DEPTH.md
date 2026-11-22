@@ -11,6 +11,7 @@
 | M5 时长与丢段对账 | 查看并集覆盖守恒 | `/sheet/balance` `/api/check/balance` | `app/modules/balance/service.py` | `tests/test_balance.py` |
 | M6 批次留档复跑 | 保存原件并逐值复算 | `/sheet/runs` `POST /api/runs` | `app/modules/runs/files.py` `app/modules/runs/service.py` | `tests/test_runs.py` |
 | M7 交付证据签发 | 下载经散列核验的交付证据 | `/sheet/delivery` `/api/delivery/<key>/export` | `app/modules/delivery/checks.py` | `tests/test_delivery.py` |
+| M8 待选原稿与晚到定稿 | 候选留档、帧台账、定稿复算 | `/sheet/pending` `POST /api/delivery/<key>/finalize` | `app/modules/finalize/decisions.py` `app/frame_ledger.py` | `tests/test_finalize.py` |
 
 ## 陷阱登记
 
@@ -25,6 +26,10 @@
 | TRAP-14 | C111 内容相撞 | 后稿静默覆盖 | 同号矛盾整组隔离 | `app/modules/source/service.py` | `tests/test_source.py::test_conflicting_revision` |
 | TRAP-17 | `legacy_id` 旧表头 | 硬读当前字段失败 | 按列别名迁移 | `app/modules/source/service.py` | `tests/test_source.py::test_bom_and_alias` |
 | TRAP-23 | C115 与 C116 首尾相接 | 共同边界算重叠 | 半开区间扫线 | `app/modules/overlaps/sweep.py` | `tests/test_overlaps.py::test_touch_is_not_overlap` |
+| TRAP-26 | C111 两版未定稿 | 先挑一版签发或整轨等定稿 | 候选整组留档 PENDING，帧台账逐帧标 READY/PENDING，定稿前候选源帧留待证侧 | `app/modules/source/service.py` `app/frame_ledger.py` | `tests/test_finalize.py` |
+| TRAP-27 | 候选稿与邻居撞帧 | 当成已确认冲突或完全漏报 | 扫描线并入候选，单记 CANDIDATE_RISK，定稿后提升为 OVERLAP | `app/modules/overlaps/service.py` | `tests/test_finalize.py::test_candidate_risk_separate_from_confirmed_overlap` |
+| TRAP-28 | 同一份定稿重复提交 | 重复签发新档 | 档号绑定决策散列，内容寻址命中即 reused | `app/modules/runs/service.py` | `tests/test_finalize.py::test_same_decision_retry_is_idempotent` |
+| TRAP-29 | 邻居帧落在候选覆盖区 | 连坐标记待定 | 仅候选字幕本身占据的帧记 PENDING，已采信帧保持 READY | `app/frame_ledger.py` | `tests/test_finalize.py::test_frame_ledger_marks_ready_and_pending` |
 
 ## 守恒与范围
 

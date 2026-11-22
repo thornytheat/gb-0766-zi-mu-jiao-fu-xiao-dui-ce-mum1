@@ -5,7 +5,10 @@ from app.pipeline import inspect
 
 
 def test_dirty_cover(dirty):
-    assert dirty['balance']['counts'] == dict(original='1140',delivered='740',removed='200',pending='200',rejected_unmeasurable=5,overlap_target_frames=65)
+    assert dirty['balance']['counts'] == dict(
+        original='1160', delivered='740', removed='200', pending='220',
+        rejected_unmeasurable=5, overlap_target_frames=65,
+        pending_candidate_frames='20', pending_cue_groups=1, pending_lines=[14, 15])
 
 
 def test_clean_cover():

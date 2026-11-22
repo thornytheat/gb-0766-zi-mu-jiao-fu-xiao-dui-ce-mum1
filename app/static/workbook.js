@@ -27,3 +27,28 @@ document.querySelector('#originals')?.addEventListener('submit', event => {
   send(event.submitter, Object.fromEntries(new FormData(event.currentTarget)));
 });
 document.querySelector('#repeat')?.addEventListener('click', event => send(event.currentTarget, null, event.currentTarget.dataset.id));
+
+const finalizeForm = document.querySelector('#finalize-form');
+finalizeForm?.addEventListener('submit', async event => {
+  event.preventDefault();
+  const run = finalizeForm.dataset.run;
+  const decisions = [...finalizeForm.querySelectorAll('fieldset')].map(fieldset => {
+    const picked = fieldset.querySelector('input:checked');
+    return picked ? {track: fieldset.dataset.track, cue_id: fieldset.dataset.cue, line: Number(picked.value)} : null;
+  }).filter(Boolean);
+  if (!decisions.length) { notice.textContent = '先为每个待选组选定原行'; return; }
+  const button = finalizeForm.querySelector('button');
+  button.disabled = true;
+  notice.textContent = '正在复算定稿…';
+  try {
+    const response = await fetch(`/api/delivery/${run}/finalize`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({decisions})
+    });
+    const result = await response.json();
+    if (!response.ok) throw Error(result.message);
+    notice.textContent = result.reused ? '定稿未变化，沿用既有档' : '定稿已复算并签发新档';
+    location.assign(`/sheet/delivery?run=${result.id}`);
+  } catch (error) {
+    notice.textContent = error.message || '定稿提交失败';
+  } finally { button.disabled = false; }
+});

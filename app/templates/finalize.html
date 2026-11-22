@@ -1,0 +1,20 @@
+{% if manifest %}
+<details class="upload finalize" open><summary>晚到定稿复算</summary>
+<form id="finalize-form" data-run="{{ manifest.id }}">
+<p class="hint">对同轨同号的待选原稿按原行选定一版；同一份定稿重试不重复签发，换版产生新档号。</p>
+<div id="finalize-groups">
+{% for group in stages.get('pending', []) %}
+<fieldset data-track="{{ group.track }}" data-cue="{{ group.cue_id }}">
+<legend>{{ group.track }} / {{ group.cue_id }}（{{ group.status }}）</legend>
+{% for candidate in group.candidates %}
+<label><input type="radio" name="{{ group.track }}|{{ group.cue_id }}" value="{{ candidate.line }}" required>
+原行 {{ candidate.line }} · {{ candidate.text }}</label>
+{% endfor %}
+</fieldset>
+{% else %}
+<p class="hint">本档没有待选原稿，候选均已定稿。</p>
+{% endfor %}
+</div>
+<button {% if not stages.get('pending') %}disabled{% endif %}>提交定稿并复算</button>
+</form></details>
+{% endif %}

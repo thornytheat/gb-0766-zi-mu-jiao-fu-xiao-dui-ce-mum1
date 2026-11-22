@@ -11,4 +11,5 @@
 {% if sheet=='delivery' and manifest %}<a href="{{ url_for('delivery.export',key=manifest.id) }}">下载交付证据</a>{% endif %}</div></div>
 {% include 'grid.html' %}
 {% if sheet == 'source' %}{% include 'submission.html' %}{% endif %}
+{% if sheet == 'delivery' %}{% include 'finalize.html' %}{% endif %}
 </section></main><footer><span>{{ manifest.version if manifest else 'VENUE-CAPTIONS / 1' }}</span><span id="notice" role="status">{{ manifest.created_at[:19] ~ ' UTC' if manifest else '源帧 → 目标帧' }}</span><span>隔离 {{ totals.rejected_unmeasurable }} 行</span></footer></div></div></body></html>

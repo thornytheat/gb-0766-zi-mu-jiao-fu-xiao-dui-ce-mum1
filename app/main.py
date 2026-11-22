@@ -2,6 +2,7 @@ import os
 from flask import Flask, jsonify, render_template, request
 from werkzeug.exceptions import RequestEntityTooLarge
 from .modules.delivery.routes import delivery
+from .modules.finalize.routes import finalize
 from .modules.runs.files import CutArchive
 from .modules.runs.routes import runs
 from .problems import Rejection
@@ -13,7 +14,7 @@ def create_app(root=None):
     app.url_map.redirect_defaults = False
     app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
     app.extensions['cut_archive'] = CutArchive(root or os.getenv('CAPTION_ARCHIVE', 'var/cuts'))
-    for module in (sheets, runs, delivery):
+    for module in (sheets, runs, delivery, finalize):
         app.register_blueprint(module)
 
     @app.get('/health')

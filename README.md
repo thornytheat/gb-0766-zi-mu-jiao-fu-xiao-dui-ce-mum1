@@ -9,10 +9,11 @@
 - 首页检查 C101 跨三段，C103 在 B-01 与 B-02 间留下 200 源帧缺证。网格支持方向键和鼠标选格。
 - 帧率校核查 C105 的非法丢帧号。冲突定位查三条字幕同占 28 个目标帧，覆盖账中重叠另外记录。
 - 文件采信可提交自有 CSV。归档校对后，在版本归档复算，在交付签发下载一份 JSON 证据包。
+- 同轨同号两版原稿未定稿时不先挑版：两版作为 `PENDING` 候选留档，待选原稿页与证据包 `frame_ledger` 逐帧标出可交（READY）与待定（PENDING）；候选与他条撞帧单记为候选风险。晚到定稿经 `POST /api/delivery/<id>/finalize` 按原行选定并复算，同一份定稿重试沿用原档号、不重复签发。
 
 ## API
 
-`POST /api/runs` 接受 `{"sample":"dirty"}`、`{"sample":"clean"}` 或含 `cues` 与 `cuts` CSV 文本的 JSON。`GET /api/check/<sheet>` 查 `source`、`clock`、`edits`、`overlaps`、`balance`，用 `run` 查询归档或用 `sample` 预览。归档详情 `GET /api/runs/<id>`，复算 `POST /api/runs/<id>/repeat`，下载 `GET /api/delivery/<id>/export`。
+`POST /api/runs` 接受 `{"sample":"dirty"}`、`{"sample":"clean"}` 或含 `cues` 与 `cuts` CSV 文本的 JSON。`GET /api/check/<sheet>` 查 `source`、`clock`、`edits`、`overlaps`、`balance`、`pending`，用 `run` 查询归档或用 `sample` 预览。归档详情 `GET /api/runs/<id>`，复算 `POST /api/runs/<id>/repeat`，下载 `GET /api/delivery/<id>/export`。晚到定稿 `POST /api/delivery/<id>/finalize`，体为 `{"decisions":[{"track","cue_id","line"}]}`；定稿指向不存在的候选组或原行返回 `FINALIZE_TARGET` 且不留档，相同决策重试返回同一档号（`reused=true`）。
 
 [数据定义](docs/DATA-DICTIONARY.md) · [深度登记](docs/DEPTH.md) · [复算例](docs/FRAME-EXAMPLE.md)
 
